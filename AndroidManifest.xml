@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
     <application
@@ -20,6 +20,12 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".StartVideo" android:label="DASH Streaming">
+            <intent-filter>
+                <category android:name="android.intent.category.START_VIDEO" />
             </intent-filter>
         </activity>
     </application>

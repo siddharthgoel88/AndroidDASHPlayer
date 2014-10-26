@@ -1,6 +1,7 @@
 package com.cs5248.androiddashplayer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -32,6 +33,16 @@ public class MainActivity extends Activity {
 				Log.d("DASHPlayer", "The url is "+ mpdUrl);
 				PlayVideo pv = new PlayVideo(mpdUrl);
 				pv.execute();
+			}
+		});
+        
+        Button videoButton = (Button) findViewById(R.id.videoButton);
+        videoButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, StartVideo.class);
+				startActivity(intent);
 			}
 		});
     }
