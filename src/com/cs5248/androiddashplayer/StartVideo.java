@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class StartVideo extends Activity implements 
-OnCompletionListener, SurfaceHolder.Callback {
+OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 	private static final String TAG = "DASHPlayer";
     private MediaPlayer currentMediaPlayer;
     private MediaPlayer preparedMediaPlayer;
@@ -154,6 +154,12 @@ OnCompletionListener, SurfaceHolder.Callback {
 	private void performDispose() {
 		tempHolder = null;
 		tempMediaPlayer = null;
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			Log.d(TAG, "Sleep before surface removing of View List interuppted");
+			e.printStackTrace();
+		}
 		surfaceViewList.removeView(tempView);
 	}
 
@@ -181,8 +187,8 @@ OnCompletionListener, SurfaceHolder.Callback {
 			preparedMediaPlayer.setOnCompletionListener(this);
 			preparedMediaPlayer.setSurface(preparedHolder.getSurface());
 			preparedMediaPlayer.prepare();
-			preparedMediaPlayer.start();
-			preparedMediaPlayer.pause();
+			preparedMediaPlayer.setOnPreparedListener(this);
+			currentMediaPlayer.setNextMediaPlayer(preparedMediaPlayer);
 		} catch (Exception e) {
 			Log.e(TAG, "error:" + e.getMessage(), e);
 		}
@@ -193,4 +199,10 @@ OnCompletionListener, SurfaceHolder.Callback {
     	currentMediaPlayer.stop();
     	finish();
     }
+
+	@Override
+	public void onPrepared(MediaPlayer mp) {
+		mp.start();
+		mp.pause();
+	}
 }
