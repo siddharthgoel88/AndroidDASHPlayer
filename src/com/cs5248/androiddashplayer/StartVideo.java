@@ -197,6 +197,7 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
     @Override
     public void onBackPressed() {
     	currentMediaPlayer.stop();
+    	currentMediaPlayer.release();
     	finish();
     }
 
