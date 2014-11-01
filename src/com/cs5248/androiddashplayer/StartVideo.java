@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class StartVideo extends Activity implements 
@@ -25,6 +27,7 @@ OnCompletionListener, SurfaceHolder.Callback {
     private SurfaceHolder tempHolder;
     private RelativeLayout surfaceViewList;
     private String path;
+    private boolean isPlaying;
 
     /**
      * 
@@ -34,6 +37,7 @@ OnCompletionListener, SurfaceHolder.Callback {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         
+        isPlaying = false;
         currentMediaPlayer = null;
         preparedMediaPlayer = null;
         currentView = null;
@@ -45,7 +49,23 @@ OnCompletionListener, SurfaceHolder.Callback {
         
         setContentView(R.layout.mediaplayer);
         surfaceViewList = (RelativeLayout) findViewById(R.id.surfaceViewList);
-        path = Environment.getExternalStorageDirectory().getPath() + "/DASHRecorder/video/DASH_Video_06_10_2014_01_03_03.mp4";
+        path = Environment.getExternalStorageDirectory().getPath() + "/DASHRecorder/video/DASH_Video_01_11_2014_11_21_02.mp4";
+        
+        Button playPauseButton = (Button) findViewById(R.id.playPauseButton);
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(isPlaying && (currentMediaPlayer != null)) {
+					currentMediaPlayer.pause();
+					isPlaying = false;
+				} else if (!isPlaying && (currentMediaPlayer != null)) {
+					currentMediaPlayer.start();
+					isPlaying = true;
+				}
+			}
+		});
+        
         prepareNext();
     }
 
@@ -70,7 +90,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 						currentMediaPlayer.setDataSource(path);
 						currentMediaPlayer.setSurface(currentHolder.getSurface());
 						//currentHolder.setFixedSize(currentMediaPlayer.getVideoWidth(), currentMediaPlayer.getVideoHeight());
-						currentHolder.setFixedSize(480, 640);
+						//currentHolder.setFixedSize(480, 640);
 						currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
 							
 							@Override
@@ -86,6 +106,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 							@Override
 							public void onPrepared(MediaPlayer mp) {
 								currentMediaPlayer.start();
+								isPlaying = true;
 							}
 						});
 						
@@ -156,12 +177,20 @@ OnCompletionListener, SurfaceHolder.Callback {
 			preparedMediaPlayer = new MediaPlayer();
 			preparedMediaPlayer.setDataSource(path);
 			//preparedHolder.setFixedSize(preparedMediaPlayer.getVideoWidth(), preparedMediaPlayer.getVideoHeight());
-			preparedHolder.setFixedSize(480, 640);
+			//preparedHolder.setFixedSize(480, 640);
 			preparedMediaPlayer.setOnCompletionListener(this);
 			preparedMediaPlayer.setSurface(preparedHolder.getSurface());
 			preparedMediaPlayer.prepare();
+			preparedMediaPlayer.start();
+			preparedMediaPlayer.pause();
 		} catch (Exception e) {
 			Log.e(TAG, "error:" + e.getMessage(), e);
 		}
+    }
+    
+    @Override
+    public void onBackPressed() {
+    	currentMediaPlayer.stop();
+    	finish();
     }
 }
