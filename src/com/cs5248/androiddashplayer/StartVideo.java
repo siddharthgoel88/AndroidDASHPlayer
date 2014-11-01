@@ -74,7 +74,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 			//currentView = (SurfaceView) findViewById(R.id.streamingSurface);
 			currentView = (SurfaceView) new SurfaceView(getApplicationContext());
 			currentHolder = currentView.getHolder();
-			surfaceViewList.addView(currentView);
+			surfaceViewList.addView(currentView, 0);
 			currentHolder.addCallback(new SurfaceHolder.Callback() {
 				
 				@Override
