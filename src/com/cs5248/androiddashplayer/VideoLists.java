@@ -10,16 +10,40 @@ import ch.boye.httpclientandroidlib.client.methods.HttpGet;
 
 public class VideoLists 
 {
+	
+	public class VideoForLater
+	{
+		private String videoName;
+		private HttpGet videoHttpGet;
+		public String getVideoName() {
+			return videoName;
+		}
+		public void setVideoName(String videoName) {
+			this.videoName = videoName;
+		}
+		public HttpGet getVideoHttpGet() {
+			return videoHttpGet;
+		}
+		public void setVideoHttpGet(HttpGet videoHttpGet) {
+			this.videoHttpGet = videoHttpGet;
+		}
+		public VideoForLater(String name, HttpGet hg)
+		{
+			this.videoHttpGet = hg;
+			this.videoName = name;
+		}
+	}
+	
 	private static final String ns = null;
 	
 	private final int LOW = 0;
 	private final int MED = 1;
 	private final int HIGH = 2;
-	
 
 	private String baseUrl;
-	private ArrayList<HttpGet>[] videoLists;
+	private ArrayList<VideoForLater>[] videoLists;
 	private int presentQuality;
+	private int qualityForPlay;
 	
 	public VideoLists()
 	{
@@ -27,8 +51,28 @@ public class VideoLists
 		videoLists = new ArrayList[3];
 		for (int i=0;i<3;i++)
 		{
-			videoLists[i] = new ArrayList<HttpGet>();
+			videoLists[i] = new ArrayList<VideoForLater>();
 		}
+	}
+	
+	public int getTotalNumberOfVideos()
+	{
+		return videoLists[1].size();
+	}
+	
+	public void setInitialQuality()
+	{
+		qualityForPlay = MED;
+	}
+	
+	public void increaseQuality()
+	{
+		qualityForPlay = qualityForPlay >= 2 ? 2 : qualityForPlay+1;
+	}
+	
+	public void decreaseQuality()
+	{
+		qualityForPlay = qualityForPlay <= 0 ? 0 : qualityForPlay-1;
 	}
 	
 	public void getDataIntoVideoListsFromParser(XmlPullParser parser) 
@@ -84,7 +128,7 @@ public class VideoLists
 	        String videoUrl = parser.getAttributeValue(ns, "sourceUrl");
 	        String fullUrl = baseUrl + videoUrl;
 	        Log.d("DASHPlayer", "The url of the segment being added is " + fullUrl);
-	        this.videoLists[presentQuality].add(new HttpGet(fullUrl)); 
+	        this.videoLists[presentQuality].add(new VideoForLater(videoUrl, new HttpGet(fullUrl))); 
 	        parser.nextTag();
 		}
 		catch (Exception e)
@@ -135,5 +179,10 @@ public class VideoLists
 		{
 			Log.i("DashPlayer", "The exception at getBaseUrl is " + e.getMessage());
 		}
+	}
+
+	public VideoForLater getVideoUrl(int i) 
+	{
+		return videoLists[qualityForPlay].get(i);
 	}
 }

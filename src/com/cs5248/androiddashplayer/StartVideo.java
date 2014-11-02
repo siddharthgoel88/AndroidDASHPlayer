@@ -1,6 +1,7 @@
 package com.cs5248.androiddashplayer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -25,6 +26,8 @@ OnCompletionListener, SurfaceHolder.Callback {
     private SurfaceHolder tempHolder;
     private RelativeLayout surfaceViewList;
     private String path;
+    private int counter;
+    private ApplicationState appState;
 
     /**
      * 
@@ -33,7 +36,7 @@ OnCompletionListener, SurfaceHolder.Callback {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        
+        Log.i(TAG, "Reached onCreate of start video");
         currentMediaPlayer = null;
         preparedMediaPlayer = null;
         currentView = null;
@@ -42,15 +45,61 @@ OnCompletionListener, SurfaceHolder.Callback {
         preparedView = null;
         currentHolder = null;
         preparedHolder = null;
+        counter = 0;
+        appState = (ApplicationState)getApplicationContext();
         
+        if (appState.getNumberOfVideos() >=3)
+        {
+        	while (appState.getBufferSize() <3)
+        	{
+        		try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        }
+        
+        path = getNextVideoPath();
         setContentView(R.layout.mediaplayer);
         surfaceViewList = (RelativeLayout) findViewById(R.id.surfaceViewList);
-        path = Environment.getExternalStorageDirectory().getPath() + "/DASHRecorder/video/DASH_Video_06_10_2014_01_03_03.mp4";
         prepareNext();
     }
 
+	private String getNextVideoPath() 
+	{
+        Log.i(TAG, "Trying to get next video");
+
+		String videoPath = null;
+		while (true)
+		{
+			videoPath = appState.getNextVideoToPlay();
+			if (appState.getNumberOfVideosLeft() == 0 || videoPath != null)
+			{
+		        Log.i(TAG, "Exiting get next video");
+
+				break;
+			}
+	        Log.i(TAG, "Waiting for the queue");
+
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+        Log.i(TAG, "The video is " + videoPath);
+		
+		return videoPath;
+	}
+
 	private void prepareNext() {
+        Log.i(TAG, "Entering prepareNext()");
 		if (currentView == null) {
+	        Log.i(TAG, "Entering if part of prepareNext()");
+
 			//currentView = (SurfaceView) findViewById(R.id.streamingSurface);
 			currentView = (SurfaceView) new SurfaceView(getApplicationContext());
 			currentHolder = currentView.getHolder();
@@ -59,23 +108,25 @@ OnCompletionListener, SurfaceHolder.Callback {
 				
 				@Override
 				public void surfaceDestroyed(SurfaceHolder holder) {
-					Log.d(TAG, "surfaceDestroyed of first surface called");
+					Log.i(TAG, "surfaceDestroyed of first surface called");
 				}
 				
 				@Override
 				public void surfaceCreated(SurfaceHolder holder) {
-					Log.d(TAG, "surfaceCreated of first surface called");
+					Log.i(TAG, "surfaceCreated of first surface called");
 					try {
 						currentMediaPlayer = new MediaPlayer();
 						currentMediaPlayer.setDataSource(path);
 						currentMediaPlayer.setSurface(currentHolder.getSurface());
 						//currentHolder.setFixedSize(currentMediaPlayer.getVideoWidth(), currentMediaPlayer.getVideoHeight());
-						currentHolder.setFixedSize(480, 640);
+						//currentHolder.setFixedSize(480, 640);
 						currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
 							
 							@Override
 							public void onCompletion(MediaPlayer mp) {
+								counter++;
 								mp.release();
+								Log.i(TAG, "The video has finished playing now ");
 								playNext();
 							}
 						});
@@ -85,7 +136,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 							
 							@Override
 							public void onPrepared(MediaPlayer mp) {
-								currentMediaPlayer.start();
+								mp.start();
 							}
 						});
 						
@@ -104,14 +155,22 @@ OnCompletionListener, SurfaceHolder.Callback {
 				}
 			});
 		} else {
-			preparedView = (SurfaceView) new SurfaceView(getApplicationContext());
-			preparedHolder = preparedView.getHolder();
-			preparedHolder.addCallback(this);
-			surfaceViewList.addView(preparedView, 0);
+	        Log.i(TAG, "Entering else part of prepareNext()");
+	        
+	        if (appState.getNumberOfVideosLeft()>0)
+	        {
+
+				preparedView = (SurfaceView) new SurfaceView(getApplicationContext());
+				preparedHolder = preparedView.getHolder();
+				preparedHolder.addCallback(this);
+				surfaceViewList.addView(preparedView, 0);
+	        }
 		}
 	}
 	
 	private void playNext() {
+        Log.i(TAG, "Entering playNext()");
+
 		prepareDispose();
 		
 		currentHolder = preparedHolder;
@@ -125,38 +184,65 @@ OnCompletionListener, SurfaceHolder.Callback {
 	}
 	
 	private void prepareDispose() {
+        Log.i(TAG, "Entering prepareDispose()");
+
 		tempMediaPlayer = currentMediaPlayer;
 		tempHolder = currentHolder;
 		tempView = currentView;
 	}
 	
 	private void performDispose() {
+        Log.i(TAG, "Entering performDispose()");
+
 		tempHolder = null;
 		tempMediaPlayer = null;
 		surfaceViewList.removeView(tempView);
 	}
 
     public void onCompletion(MediaPlayer mp) {
+        Log.i(TAG, "Entering onCompletion()");
+
+    	counter++;
+    	if (appState.getNumberOfVideos() - counter >=1)
+    	{
+    		while (appState.getBufferSize() <1)
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    	}
         Log.d(TAG, "onCompletion called");
         mp.release();
-        playNext();
+		Log.i(TAG, "The video has finished playing now for the later ones");
+        if (appState.getNumberOfVideosLeft()>0)
+        {
+            playNext();
+        }
+        else
+        {
+        	prepareDispose();
+        	performDispose();
+        	finish();
+        }
     }
 
     public void surfaceChanged(SurfaceHolder surfaceholder, int i, int j, int k) {
-        Log.d(TAG, "surfaceChanged called");
+        Log.d(TAG, "surfaceChanged for later called");
     }
 
     public void surfaceDestroyed(SurfaceHolder surfaceholder) {
-        Log.d(TAG, "surfaceDestroyed called");
+        Log.d(TAG, "surfaceDestroyed for later called");
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(TAG, "surfaceCreated called");
+        Log.d(TAG, "surfaceCreated for later called");
         try {
 			preparedMediaPlayer = new MediaPlayer();
-			preparedMediaPlayer.setDataSource(path);
+			preparedMediaPlayer.setDataSource(getNextVideoPath());
 			//preparedHolder.setFixedSize(preparedMediaPlayer.getVideoWidth(), preparedMediaPlayer.getVideoHeight());
-			preparedHolder.setFixedSize(480, 640);
+			//preparedHolder.setFixedSize(480, 640);
 			preparedMediaPlayer.setOnCompletionListener(this);
 			preparedMediaPlayer.setSurface(preparedHolder.getSurface());
 			preparedMediaPlayer.prepare();

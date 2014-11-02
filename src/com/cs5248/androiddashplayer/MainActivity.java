@@ -1,6 +1,9 @@
 package com.cs5248.androiddashplayer;
 
+import java.util.LinkedList;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.app.Application;
+
 
 public class MainActivity extends Activity {
 
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
@@ -23,16 +28,24 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+		        ApplicationState appState = (ApplicationState)getApplicationContext();
+		        appState.initVideo();
+				downloadVideo();
 				playVideo();
 			}
 
-			private void playVideo() 
+			private void downloadVideo() 
 			{
 				EditText mpdEt = (EditText) findViewById(R.id.mpdUrl);
 				String mpdUrl = mpdEt.getText().toString();
 				Log.d("DASHPlayer", "The url is "+ mpdUrl);
-				PlayVideo pv = new PlayVideo(mpdUrl);
+				DownloadVideo pv = new DownloadVideo(mpdUrl, getApplicationContext());
 				pv.execute();
+			}
+			private void playVideo()
+			{
+				Intent intent = new Intent(MainActivity.this, StartVideo.class);
+				startActivity(intent);				
 			}
 		});
         
