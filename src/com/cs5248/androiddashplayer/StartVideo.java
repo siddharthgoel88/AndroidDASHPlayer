@@ -10,10 +10,12 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class StartVideo extends Activity implements 
-OnCompletionListener, SurfaceHolder.Callback {
+OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 	private static final String TAG = "DASHPlayer";
     private MediaPlayer currentMediaPlayer;
     private MediaPlayer preparedMediaPlayer;
@@ -28,6 +30,7 @@ OnCompletionListener, SurfaceHolder.Callback {
     private String path;
     private int counter;
     private ApplicationState appState;
+    private boolean isPlaying;
 
     /**
      * 
@@ -37,6 +40,8 @@ OnCompletionListener, SurfaceHolder.Callback {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         Log.i(TAG, "Reached onCreate of start video");
+        
+        isPlaying = false;
         currentMediaPlayer = null;
         preparedMediaPlayer = null;
         currentView = null;
@@ -64,6 +69,23 @@ OnCompletionListener, SurfaceHolder.Callback {
         path = getNextVideoPath();
         setContentView(R.layout.mediaplayer);
         surfaceViewList = (RelativeLayout) findViewById(R.id.surfaceViewList);
+        path = Environment.getExternalStorageDirectory().getPath() + "/DASHRecorder/video/DASH_Video_01_11_2014_11_21_02.mp4";
+        
+        Button playPauseButton = (Button) findViewById(R.id.playPauseButton);
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(isPlaying && (currentMediaPlayer != null)) {
+					currentMediaPlayer.pause();
+					isPlaying = false;
+				} else if (!isPlaying && (currentMediaPlayer != null)) {
+					currentMediaPlayer.start();
+					isPlaying = true;
+				}
+			}
+		});
+        
         prepareNext();
     }
 
@@ -103,7 +125,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 			//currentView = (SurfaceView) findViewById(R.id.streamingSurface);
 			currentView = (SurfaceView) new SurfaceView(getApplicationContext());
 			currentHolder = currentView.getHolder();
-			surfaceViewList.addView(currentView);
+			surfaceViewList.addView(currentView, 0);
 			currentHolder.addCallback(new SurfaceHolder.Callback() {
 				
 				@Override
@@ -137,6 +159,7 @@ OnCompletionListener, SurfaceHolder.Callback {
 							@Override
 							public void onPrepared(MediaPlayer mp) {
 								mp.start();
+								isPlaying = true;
 							}
 						});
 						
@@ -196,6 +219,12 @@ OnCompletionListener, SurfaceHolder.Callback {
 
 		tempHolder = null;
 		tempMediaPlayer = null;
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			Log.d(TAG, "Sleep before surface removing of View List interuppted");
+			e.printStackTrace();
+		}
 		surfaceViewList.removeView(tempView);
 	}
 
@@ -246,8 +275,23 @@ OnCompletionListener, SurfaceHolder.Callback {
 			preparedMediaPlayer.setOnCompletionListener(this);
 			preparedMediaPlayer.setSurface(preparedHolder.getSurface());
 			preparedMediaPlayer.prepare();
+			preparedMediaPlayer.setOnPreparedListener(this);
+			currentMediaPlayer.setNextMediaPlayer(preparedMediaPlayer);
 		} catch (Exception e) {
 			Log.e(TAG, "error:" + e.getMessage(), e);
 		}
     }
+    
+    @Override
+    public void onBackPressed() {
+    	currentMediaPlayer.stop();
+    	currentMediaPlayer.release();
+    	finish();
+    }
+
+	@Override
+	public void onPrepared(MediaPlayer mp) {
+		mp.start();
+		mp.pause();
+	}
 }
