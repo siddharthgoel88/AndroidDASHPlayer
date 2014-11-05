@@ -223,7 +223,7 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
         Log.i(TAG, "Entering onCompletion()");
 
     	counter++;
-    	if (appState.getNumberOfVideos() - counter >=1)
+/*    	if (appState.getNumberOfVideos() - counter >=1)
     	{
     		while (appState.getBufferSize() <1)
 				try {
@@ -232,7 +232,7 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    	}
+    	}*/
         Log.d(TAG, "onCompletion called");
         mp.release();
 		Log.i(TAG, "The video has finished playing now for the later ones");
@@ -244,8 +244,6 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
         {
         	prepareDispose();
         	performDispose();
-        	currentMediaPlayer.stop();
-        	currentMediaPlayer.release();
         	finish();
         }
     }
@@ -279,6 +277,8 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
     public void onBackPressed() {
     	currentMediaPlayer.stop();
     	currentMediaPlayer.release();
+    	prepareDispose();
+    	performDispose();
     	finish();
     }
 

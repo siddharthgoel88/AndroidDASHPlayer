@@ -1,8 +1,6 @@
 package com.cs5248.androiddashplayer;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -17,21 +15,21 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
-public class DisplayVideoPlayLists extends AsyncTask<Void, Integer, Void>
+public class DisplayVideoPlayLists extends AsyncTask<String[], Integer, Void>
 {
-	private static final String ns = null;
-	private Spinner displayMpd;
-	private String displayUri;
-	private Context context;
 	
-	public DisplayVideoPlayLists(Spinner display, String uri, Context context)
+	
+	private static final String ns = null;
+	private String displayUri;
+	private ApplicationState appState;
+	
+	
+	public DisplayVideoPlayLists(String uri, Context context)
 	{
-		displayMpd = display;
-		displayUri = uri;
-		this.context = context;
+		this.appState = (ApplicationState)context.getApplicationContext();
+
+		this.displayUri = uri;
 	}
 	
 	private void getFileAndDisplay() 
@@ -59,8 +57,9 @@ public class DisplayVideoPlayLists extends AsyncTask<Void, Integer, Void>
             String[] itemsArray= new String[items.size()];
             for (int j=0;j<itemsArray.length;j++)
             	itemsArray[j] = items.get(j);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, itemsArray);
-            this.displayMpd.setAdapter(adapter);
+            
+            appState.setItemsArray(itemsArray);
+
 		}
 		catch(Exception e)
 		{
@@ -121,26 +120,10 @@ public class DisplayVideoPlayLists extends AsyncTask<Void, Integer, Void>
 		catch (Exception e)
 		{
 			Log.i("DashPlayer", "The exception at setPresentQuality is " + e.getMessage());
-		}		
-
-		
-		try
-		{
-		    parser.require(XmlPullParser.START_TAG, ns, "mpd");
-		    if (parser.next() == XmlPullParser.TEXT) {
-		        list.add(parser.getText());
-		        parser.nextTag();
-		    }
-		    parser.require(XmlPullParser.END_TAG, ns, "mpd");
-		}
-		catch (Exception e)
-		{
-			Log.i("DashPlayer", "The exception at addToList is " + e.getMessage());
 		}
 	}
 
-	@Override
-	protected Void doInBackground(Void... params)
+	protected Void doInBackground(String[]... params)
 	{
 		Log.i("DASHPlayer" , "Inside doInBackground of DisplayVideoPlayLists");
 		

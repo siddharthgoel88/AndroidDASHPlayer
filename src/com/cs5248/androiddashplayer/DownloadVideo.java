@@ -30,7 +30,8 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		this.appContext = context;
 		this.mpdUrl = mpdUrl;
 		videoLists = new VideoLists();
-		directory = Environment.getExternalStorageDirectory().getPath() + "/DashRecorder/";
+		//directory = Environment.getExternalStorageDirectory().getPath() + "/DashRecorder/";
+		directory = "/sdcard/DASHPlayer/";
 		File dir = new File(directory);
 		if (!(dir.exists()) || !(dir.isDirectory()))
 		{
@@ -70,7 +71,9 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 				}
 				if (resp.getEntity()!=null)
 				{
-					String videoName = this.directory+videoToDownloadStruct.getVideoName();
+					String videoNameTemp = videoToDownloadStruct.getVideoName();
+					int index = videoNameTemp.lastIndexOf("/");
+					String videoName = this.directory + videoNameTemp.substring(index+1);
 					Log.i("DashPlayer", "Downloading the video and saving it to "+videoName);
 					File newFile = new File(videoName);
 					File dir = new File(newFile.getParent());
@@ -109,10 +112,18 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		}
 		
 		if (appState.getBufferSize()>5)
+		{
+			Log.i("DASHPlayer", "Increasing quality");
 			videoLists.increaseQuality();
+		}
 		else if (appState.getBufferSize()<3)
 		{
+			Log.i("DASHPlayer", "Decreasing quality");
 			videoLists.decreaseQuality();
+		}
+		else
+		{
+			Log.i("DASHPlayer", "Same quality");
 		}
 	}
 

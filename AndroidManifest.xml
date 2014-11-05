@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:name="com.cs5248.androiddashplayer.ApplicationState" >
+        android:name=".ApplicationState" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >

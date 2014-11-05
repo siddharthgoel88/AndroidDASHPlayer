@@ -184,6 +184,7 @@ public class VideoLists
 
 	public VideoForLater getVideoUrl(int i) 
 	{
+		Log.i("DASHPlayer", "The video we are getting is " + videoLists[qualityForPlay].get(i));
 		return videoLists[qualityForPlay].get(i);
 	}
 }

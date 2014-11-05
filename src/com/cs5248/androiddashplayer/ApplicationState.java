@@ -10,7 +10,15 @@ public class ApplicationState extends Application
 	private LinkedList<String> videoBuffer;
 	private int numberOfVideos;
 	private int numberPlayed;
-	
+	private String[] itemsArray;
+	public String[] getItemsArray() {
+		return itemsArray;
+	}
+
+	public void setItemsArray(String[] itemsArray) {
+		this.itemsArray = itemsArray;
+	}
+
 	private boolean canPlay;
 	
 	@Override
@@ -22,6 +30,7 @@ public class ApplicationState extends Application
 	
 	public void initVideo()
 	{
+		itemsArray = null;
 		canPlay = false;
 		videoBuffer = new LinkedList<String>();
 		numberOfVideos = 0;
