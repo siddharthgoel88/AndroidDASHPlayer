@@ -1,12 +1,10 @@
 package com.cs5248.androiddashplayer;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,13 +17,11 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 	private static final String TAG = "DASHPlayer";
     private MediaPlayer currentMediaPlayer;
     private MediaPlayer preparedMediaPlayer;
-    private MediaPlayer tempMediaPlayer;
     private SurfaceView currentView;
     private SurfaceView preparedView;
     private SurfaceView tempView;
     private SurfaceHolder currentHolder;
     private SurfaceHolder preparedHolder;
-    private SurfaceHolder tempHolder;
     private RelativeLayout surfaceViewList;
     private String path;
     private int counter;
@@ -69,7 +65,6 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
         path = getNextVideoPath();
         setContentView(R.layout.mediaplayer);
         surfaceViewList = (RelativeLayout) findViewById(R.id.surfaceViewList);
-        path = Environment.getExternalStorageDirectory().getPath() + "/DASHRecorder/video/DASH_Video_01_11_2014_11_21_02.mp4";
         
         Button playPauseButton = (Button) findViewById(R.id.playPauseButton);
         playPauseButton.setOnClickListener(new View.OnClickListener() {
@@ -209,16 +204,12 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 	private void prepareDispose() {
         Log.i(TAG, "Entering prepareDispose()");
 
-		tempMediaPlayer = currentMediaPlayer;
-		tempHolder = currentHolder;
 		tempView = currentView;
 	}
 	
 	private void performDispose() {
         Log.i(TAG, "Entering performDispose()");
 
-		tempHolder = null;
-		tempMediaPlayer = null;
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
@@ -253,6 +244,8 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
         {
         	prepareDispose();
         	performDispose();
+        	currentMediaPlayer.stop();
+        	currentMediaPlayer.release();
         	finish();
         }
     }

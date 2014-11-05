@@ -9,7 +9,6 @@ public class ApplicationState extends Application
 {
 	private LinkedList<String> videoBuffer;
 	private int numberOfVideos;
-	private int videosDownloaded;
 	private int numberPlayed;
 	
 	private boolean canPlay;
@@ -26,7 +25,6 @@ public class ApplicationState extends Application
 		canPlay = false;
 		videoBuffer = new LinkedList<String>();
 		numberOfVideos = 0;
-		videosDownloaded = 0;
 		numberPlayed = 0;
 	}
 	
@@ -38,7 +36,6 @@ public class ApplicationState extends Application
 	public void addToBuffer(String nextVideo)
 	{
 		canPlay = true;
-		videosDownloaded++;
 		videoBuffer.add(nextVideo);
 	}
 	

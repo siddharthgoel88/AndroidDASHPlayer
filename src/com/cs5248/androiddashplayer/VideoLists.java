@@ -45,6 +45,7 @@ public class VideoLists
 	private int presentQuality;
 	private int qualityForPlay;
 	
+	@SuppressWarnings("unchecked")
 	public VideoLists()
 	{
 		baseUrl = "";

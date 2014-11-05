@@ -2,14 +2,6 @@ package com.cs5248.androiddashplayer;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 
 import com.cs5248.androiddashplayer.VideoLists.VideoForLater;
@@ -23,7 +15,6 @@ import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.StatusLine;
 import ch.boye.httpclientandroidlib.client.HttpClient;
 import ch.boye.httpclientandroidlib.client.methods.HttpGet;
-import ch.boye.httpclientandroidlib.impl.client.DefaultHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 
 public class DownloadVideo extends AsyncTask<Void, Integer, Void>
@@ -33,8 +24,6 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 	private Context appContext;
 	
 	private final String directory;
-	
-	private static final String ns = null;
 	
 	public DownloadVideo(String mpdUrl, Context context)
 	{
