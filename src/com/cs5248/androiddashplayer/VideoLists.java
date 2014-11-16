@@ -8,9 +8,11 @@ import android.util.Log;
 
 import ch.boye.httpclientandroidlib.client.methods.HttpGet;
 
+// After parsing the mpd, an object of this class gets the list of all the 
+// video segments available to download. 
 public class VideoLists 
 {
-	
+	// Helper struct
 	public class VideoForLater
 	{
 		private String videoName;
@@ -76,6 +78,7 @@ public class VideoLists
 		qualityForPlay = qualityForPlay <= 0 ? 0 : qualityForPlay-1;
 	}
 	
+	// Getting the data from the mpd into and storing it into the object
 	public void getDataIntoVideoListsFromParser(XmlPullParser parser) 
 	{
 		try
@@ -100,7 +103,7 @@ public class VideoLists
 		            continue;
 		        }
 		        String name = parser.getName();
-		        // Starts by looking for the entry tag
+		        // Handle the different tags as needed
 		        if (name.equals("BaseURL")) 
 		        {	        	
 		        	getBaseUrl(parser);

@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
 
+// This class gets the playlist of all the mpd files from the server
 public class DisplayVideoPlayLists extends AsyncTask<String[], Integer, Void>
 {
 	
@@ -32,6 +33,8 @@ public class DisplayVideoPlayLists extends AsyncTask<String[], Integer, Void>
 		this.displayUri = uri;
 	}
 	
+	// The main helper function of the class which connects to the server, gets the xml file, 
+	// parses it and fills up the list in the app state object with the mpd files
 	private void getFileAndDisplay() 
 	{
 		HttpGet uri = new HttpGet(displayUri);
@@ -53,6 +56,7 @@ public class DisplayVideoPlayLists extends AsyncTask<String[], Integer, Void>
             Log.i("DASHPlayer", is.toString());
             parser.setInput(is, null);
             
+            // Having received the xml file, parse it and store it on the appState object
             ArrayList<String> items = getListsFromXML(parser);
             String[] itemsArray= new String[items.size()];
             for (int j=0;j<itemsArray.length;j++)
@@ -66,6 +70,8 @@ public class DisplayVideoPlayLists extends AsyncTask<String[], Integer, Void>
 			Log.i("DASHPlayer", "Damn the program died with the error " + e.getMessage());
 		}
 	}
+	
+	// This function and readParser help in extracting the name of the mpd file from the xml. 
 	private ArrayList<String> getListsFromXML(XmlPullParser parser) 
 	{
 		

@@ -8,7 +8,6 @@ import com.cs5248.androiddashplayer.VideoLists.VideoForLater;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
 import ch.boye.httpclientandroidlib.HttpResponse;
@@ -17,6 +16,9 @@ import ch.boye.httpclientandroidlib.client.HttpClient;
 import ch.boye.httpclientandroidlib.client.methods.HttpGet;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 
+// The class responsible for getting the mpd file, 
+// deciding the quality of the video segment to download
+// and after that connect to the server and download the video. 
 public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 {
 	private String mpdUrl;
@@ -41,6 +43,7 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 	
 	public void playVideo()
 	{
+		// Get the mpd file, parse it and after that download the videos
 		getXmlFileAndRetrieveIntoDS();
 		getVideoAndAddToBuffer();
 		
@@ -55,6 +58,8 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		
 		for (int i=0;i<noOfVideos;i++)
 		{
+			// Set the video quality and download the video segment of the corresponding
+			// quality. 
 			setVideoQualityToDownload(i, appState);
 			VideoForLater videoToDownloadStruct = videoLists.getVideoUrl(i); 
 			HttpGet videoToDownload = videoToDownloadStruct.getVideoHttpGet();
@@ -69,6 +74,7 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 				{
 					Log.d("DASHPlayer", "HTTP error, invalid server status code: " + resp.getStatusLine());
 				}
+				// Save the downloaded video
 				if (resp.getEntity()!=null)
 				{
 					String videoNameTemp = videoToDownloadStruct.getVideoName();
@@ -102,6 +108,7 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		}
 	}
 
+	// This function looks at the size of the buffer and decides the quality accordingly
 	private void setVideoQualityToDownload(int i, ApplicationState appState) 
 	{
 		if (i<4)
@@ -134,6 +141,8 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		}
 	}
 
+	// Download the mpd file and fill up the videoLists objects accordingly
+	// with information about all the video segments. 
 	private void getXmlFileAndRetrieveIntoDS()
 	{
 
