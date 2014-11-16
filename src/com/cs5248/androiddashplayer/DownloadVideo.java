@@ -90,7 +90,14 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 			}
 			catch(Exception e)
 			{
-				Log.i("DASHPlayer", "Damn the program died while getting the video with the error " + e.getMessage());
+				Log.i("DASHPlayer", "At getVideoAndAddToBuffer - The program died while getting the video with the error " + e.getMessage());
+				i--;
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
@@ -151,7 +158,7 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 		}
 		catch(Exception e)
 		{
-			Log.i("DASHPlayer", "Damn the program died with the error " + e.getMessage());
+			Log.i("DASHPlayer", "At getXmlFileAndRetrieveIntoDS - the program died with the error " + e.getMessage());
 		}
 	}
 

@@ -5,12 +5,19 @@ import java.util.LinkedList;
 import android.app.Application;
 import android.util.Log;
 
+// This is the main application class. It maintains the global state of the app which is 
+// available to all components of the application. 
 public class ApplicationState extends Application
 {
+	// List of all videos downloaded
 	private LinkedList<String> videoBuffer;
+	
 	private int numberOfVideos;
 	private int numberPlayed;
+	
+	// List of all the videos available
 	private String[] itemsArray;
+	
 	public String[] getItemsArray() {
 		return itemsArray;
 	}
@@ -19,6 +26,7 @@ public class ApplicationState extends Application
 		this.itemsArray = itemsArray;
 	}
 
+	// is true only when videos are available in the buffer
 	private boolean canPlay;
 	
 	@Override
@@ -56,6 +64,7 @@ public class ApplicationState extends Application
 	
 	public String getNextVideoToPlay()
 	{
+		// Only get the next video 
 		while(!canPlay)
 		{
 			try {
