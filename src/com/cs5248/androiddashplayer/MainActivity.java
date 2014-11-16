@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
 	
 	public final String URI = "http://pilatus.d1.comp.nus.edu.sg/~a0110280/upload/playlist.xml";
 
-	// Had to declare a custom adapter to ensure that the colour of the text is black. 
+	// Had to declare a custom adapter to ensure that the color of the text is black. 
 	// Otherwise it was merging with the background of the app
 	static class CustomArrayAdapter<T> extends ArrayAdapter<T>
 	{

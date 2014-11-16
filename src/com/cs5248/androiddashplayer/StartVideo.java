@@ -29,7 +29,6 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
     private boolean isPlaying;
 
     /**
-     * 
      * Called when the activity is first created.
      */
     @Override
@@ -103,7 +102,6 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -112,6 +110,10 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 		return videoPath;
 	}
 
+	/**
+	 * Convenience method for performing the initial preparation 
+	 * of next video segment to be played.
+	 */
 	private void prepareNext() {
         Log.i(TAG, "Entering prepareNext()");
 		if (currentView == null) {
@@ -186,6 +188,10 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 		}
 	}
 	
+	/**
+	 * Convenience method to actually play the next video.
+	 * This is called on playback completion of a video segment.
+	 */
 	private void playNext() {
         Log.i(TAG, "Entering playNext()");
 
@@ -207,10 +213,16 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 		tempView = currentView;
 	}
 	
+	/**
+	 * Releasing resource held by previous video
+	 * segment for playback
+	 */
 	private void performDispose() {
         Log.i(TAG, "Entering performDispose()");
 
 		try {
+			//This sleep helps remove screen flicker during changing of
+			// segments
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			Log.d(TAG, "Sleep before surface removing of View List interuppted");
@@ -273,6 +285,10 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
 		}
     }
     
+    /**
+     * Handling functionality when back button 
+     * is pressed
+     */
     @Override
     public void onBackPressed() {
     	currentMediaPlayer.stop();
@@ -281,7 +297,12 @@ OnCompletionListener, SurfaceHolder.Callback, OnPreparedListener {
     	performDispose();
     	finish();
     }
-
+    
+    /**
+     * Performing start and pause of the video once it
+     * is prepared. This helps to make playback for 
+     * seamless.
+     */
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
