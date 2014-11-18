@@ -61,7 +61,8 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view,
                     int pos, long id) {
                 TextView textView = (TextView) view;
-                textView.setTextColor(Color.BLACK);
+                if (textView != null)
+                	textView.setTextColor(Color.BLACK);
             }
 
             @Override

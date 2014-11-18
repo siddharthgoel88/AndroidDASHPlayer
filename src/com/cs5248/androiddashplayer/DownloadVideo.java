@@ -116,7 +116,7 @@ public class DownloadVideo extends AsyncTask<Void, Integer, Void>
 			videoLists.setInitialQuality();
 			return;
 		}
-		while (appState.getBufferSize() > 10)
+		while (appState.getBufferSize() > 8)
 		{
 			try {
 				Thread.sleep(500);
